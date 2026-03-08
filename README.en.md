@@ -45,7 +45,7 @@ The system works for you, classifying your licenses in real time:
 ### Executive Dashboard & Stylish Widgets
 It's not just functional — it's good-looking. Track your software portfolio health with clear charts and our famous **Next Expiration Widget**.
 
-Pick your style: From the classic **Odometer** to the retro **Digital** (Casio-style), or even an **Hourglass** for the dramatic ones. 9 styles in total.
+Pick your style: From the classic **Odometer** to the retro **Digital**, or even an **Hourglass** for the dapper ones. 9 styles in total.
 
 ![widgets](docs/img/personalizacao-widget.gif)
 
@@ -94,7 +94,7 @@ Default access: `http://localhost:5000` | User: `admin` | Password: `admin`
 Key O'Clock uses **Fernet (AES-128 + HMAC-SHA256)** to protect sensitive fields like contracts and SMTP passwords. The key is configured under **Settings → Database → Encryption**.
 
 > **⚠ Responsibility notice:**
-> The encryption key belongs to **you**. If you lose it, not even NASA can recover the data.
+> The encryption key belongs to **you**. If you lose it, not even NSA can recover the data.
 > Guard your `.enc_key` file like gold — and always back it up alongside `keyoclock.db`.
 
 ---
