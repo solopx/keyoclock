@@ -42,6 +42,9 @@ O sistema trabalha por você, classificando suas licenças:
 | 🟢 **Válida / Perpétua** (>90 dias)| Durma tranquilo. |
 
 ### Dashboard Executivo & Widgets Estilosos
+
+![dashboard](docs/img/operacao-dashboard.jpg)
+
 Não é só funcional — é bonito. Acompanhe a saúde de seus contratos com gráficos claros e o nosso famoso e patenteado **Widget de Próximo Vencimento**.
 
 Escolha seu estilo: Do clássico **Odômetro** ao nostálgico **Digital**, ou até uma **Ampulheta** para os mais requintados. São 9 estilos no total.

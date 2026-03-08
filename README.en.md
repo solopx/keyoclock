@@ -41,6 +41,9 @@ The system works for you, classifying your licenses in real time:
 | 🟢 **Valid / Perpetual**  (>90 days)| Sleep easy. |
 
 ### Executive Dashboard & Stylish Widgets
+
+![dashboard](docs/img/operacao-dashboard.jpg)
+
 It's not just functional — it's good-looking. Track your license portfolio health with clear charts and our famous and patented  **Next Expiration Widget**.
 
 Pick your style: From the classic **Odometer** to the retro **Digital**, or even an **Hourglass** for the dapper ones. 9 styles in total.
