@@ -77,13 +77,17 @@ pip install -r requirements.txt
 
 # 2. Run it (HTTP mode)
 python app.py
-
-# 3. Want maximum security? (HTTPS mode)
-start_https.bat          # Windows
-HTTPS_MODE=1 python app.py  # Linux
 ```
+Access: `http://localhost:5000`
 
-Default access: `http://localhost:5000` | User: `admin` | Password: `admin`
+```bash
+# Or with maximum security (HTTPS mode)
+start_https.bat              # Windows
+HTTPS_MODE=1 python app.py   # Linux
+```
+Access: `https://localhost:5000`
+
+User: `admin` | Password: `admin`
 
 > Password change is mandatory on first login!
 
