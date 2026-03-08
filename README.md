@@ -1,4 +1,4 @@
-[![Latest Release](https://img.shields.io/github/v/release/RafaelCartarozzi/LicManager?style=for-the-badge&color=green)](https://github.com/RafaelCartarozzi/LicManager/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/solopx/keyoclock?style=for-the-badge&color=green)](https://github.com/solopx/keyoclock/releases/latest)
 
 # Key O'Clock
 
