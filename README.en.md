@@ -45,7 +45,7 @@ It's not just functional — it's good-looking. Track your license portfolio hea
 
 Pick your style: From the classic **Odometer** to the retro **Digital**, or even an **Hourglass** for the dapper ones. 9 styles in total.
 
-![widgets](docs/img/personalizacao-widget.gif)
+![widgets](docs\img\personalizacao-widget.gif)
 
 ### The "Virtual Assistant" That Never Sleeps
 Key O'Clock sends automated reports and alerts straight to your inbox:
