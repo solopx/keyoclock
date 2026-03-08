@@ -30,9 +30,9 @@ The system works for you, classifying your licenses in real time:
 | | |
 |---|---|
 | 🟣 **Expired** | You have a problem right now. |
-| 🔴**Critical** (≤30 days) | Time to open the procurement process. |
-| 🟠 **Attention / Soon** | On your radar, no rush yet. |
-| 🟢 **Valid / Perpetual** | Sleep easy. |
+| 🔴 **Critical** (≤30 days) | Time to open the procurement process. |
+| 🟠 **Attention / Soon** (≤60 days) | On your radar, no rush yet. |
+| 🟢 **Valid / Perpetual**  (>90 days)| Sleep easy. |
 
 ### Executive Dashboard & Stylish Widgets
 It's not just functional — it's good-looking. Track your software portfolio health with clear charts and our famous **Next Expiration Widget**.

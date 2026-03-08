@@ -31,10 +31,10 @@ O sistema trabalha por você, classificando suas licenças em tempo real:
 
 | | |
 |---|---|
-| 🟣**Expirada** | Aqui você tem um problema. |
+| 🟣 **Expirada** | Aqui você tem um problema! |
 | 🔴 **Crítica** (≤30 dias) | Hora de abrir o processo de compra. |
-| 🟠 **Atenção / Em breve** | No seu radar, sem pressa. |
-| 🟢 **Válida / Perpétua** | Durma tranquilo. |
+| 🟠 **Atenção / Em breve** (≤60 dias)| No seu radar, sem pressa. |
+| 🟢 **Válida / Perpétua** (>90 dias)| Durma tranquilo. |
 
 ### Dashboard Executivo & Widgets Estilosos
 Não é só funcional — é bonito. Acompanhe a saúde do seu parque de software com gráficos claros e o nosso famoso e patenteado **Widget de Próximo Vencimento**.
@@ -43,16 +43,16 @@ Escolha seu estilo: Do clássico **Odômetro** ao nostálgico **Digital**, ou at
 
 ![widgets](docs\img\personalizacao-widget.gif)
 
-### O "Secretário" que Não Dorme
+### O "Assistente Virtual" que Não Dorme
 O Key O'Clock envia relatórios e alertas automáticos diretamente para o seu e-mail:
 
 - **Relatório Periódico** — Um PDF completo no seu e-mail a cada X dias.
 - **Ronda Diária** — "Ei, estas 3 licenças entram em estado crítico hoje."
-- **Lembrete de Vencidos** — Para você não esquecer de limpar o que já passou.
+- **Lembrete de Expiração** — Para você não esquecer de limpar o que já passou.
 
 ---
 
-## Configuração Jato
+## Configuração a Jato
 
 Se você já tem o Python instalado, está a 3 comandos de distância:
 
