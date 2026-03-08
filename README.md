@@ -1,5 +1,7 @@
 # Key O'Clock
 
+### [Read this in english](README.en.md)
+
 > **Porque licença vencida não avisa — ela simplesmente para o seu negócio.**
 
 ![Logo Key O'Clock](./docs/img/logo.png)
