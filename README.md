@@ -6,7 +6,7 @@
 
 ![Logo Key O'Clock](./docs/img/logo.png)
 
-O Key O'Clock é o seu centro de comando para gestão de ativos e licenças de software. Chega de planilhas de Excel perdidas, post-its colados no monitor ou aquele frio na barriga quando um software crítico para de funcionar porque alguém esqueceu de renovar o contrato.
+O Key O'Clock é o seu centro de comando para gestão de ativos e licenças de software. Chega de planilhas de Excel perdidas, post-its colados no monitor ou reuniões maravilhoas com a gestão quando um software crítico para o funcionamento da sua empresa porque alguém esqueceu de renovar o contrato.
 
 ---
 ## Latest Release: v1.0 (Production Ready)
