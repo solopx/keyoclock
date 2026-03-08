@@ -9,6 +9,11 @@
 O Key O'Clock é o seu centro de comando para gestão de ativos e licenças de software. Chega de planilhas de Excel perdidas, post-its colados no monitor ou aquele frio na barriga quando um software crítico para de funcionar porque alguém esqueceu de renovar o contrato.
 
 ---
+## Latest Release: v1.0 (Production Ready)
+
+Estamos oficialmente em produção! A versão v1.0 do Key O'Clock consolida a base de segurança e estabilidade necessária para o ambiente corporativo.
+
+---
 
 ## Por que usar?
 
@@ -53,6 +58,14 @@ O Key O'Clock envia relatórios e alertas automáticos diretamente para o seu e-
 ---
 
 ## Configuração a Jato
+
+### Download & Install
+
+Para baixar a versão estável:
+
+**Download do instalador:** (https://github.com/solopx/keyoclock/releases/download/v1.0.0-Windows/KeyOClock-Setup-v1.0.exe)
+
+Ou se preferir pode clonar o repositório e rodar localmente.
 
 Se você já tem o Python instalado, está a 3 comandos de distância:
 

@@ -8,6 +8,12 @@ Key O'Clock is your command center for software asset and license management. No
 
 ---
 
+## Latest Release: v1.0 (Production Ready)
+
+We are officially production-ready! Key O'Clock version v1.0 consolidates the security and stability foundation necessary for the corporate environment.
+
+---
+
 ## Why use it?
 
 | | |
@@ -51,6 +57,15 @@ Key O'Clock sends automated reports and alerts straight to your inbox:
 ---
 
 ## Quick Start
+
+### Download & Install
+
+Download the latest release:
+
+**Download the installer:** (https://github.com/solopx/keyoclock/releases/download/v1.0.0-Windows/KeyOClock-Setup-v1.0.exe)
+
+
+Or if you prefer, you can clone the repository and run it locally.
 
 If you already have Python installed, you're 3 commands away:
 
