@@ -2,8 +2,6 @@
 
 # Key O'Clock
 
-> **Because expired licenses don't warn you — they just stop your business cold.**
-
 Key O'Clock is your command center for software asset and license management. No more lost Excel spreadsheets, sticky notes on the monitor, or that wonderfull meetings with the management board when a critical application stops your company because someone forgot to renew the contract.
 
 ![Logo Key O'Clock](./docs/img/logo.png)
@@ -37,13 +35,13 @@ The system works for you, classifying your licenses in real time:
 
 | | |
 |---|---|
-| 🟣 **Expired** | You have a problem right now. |
+| 🟣 **Expired** | You have a problem. |
 | 🔴 **Critical** (≤30 days) | Time to open the procurement process. |
 | 🟠 **Attention / Soon** (≤60 days) | On your radar, no rush yet. |
 | 🟢 **Valid / Perpetual**  (>90 days)| Sleep easy. |
 
 ### Executive Dashboard & Stylish Widgets
-It's not just functional — it's good-looking. Track your software portfolio health with clear charts and our famous **Next Expiration Widget**.
+It's not just functional — it's good-looking. Track your license portfolio health with clear charts and our famous and patented  **Next Expiration Widget**.
 
 Pick your style: From the classic **Odometer** to the retro **Digital**, or even an **Hourglass** for the dapper ones. 9 styles in total.
 
@@ -53,7 +51,7 @@ Pick your style: From the classic **Odometer** to the retro **Digital**, or even
 Key O'Clock sends automated reports and alerts straight to your inbox:
 
 - **Scheduled Reports** — A full PDF in your email every X days.
-- **Daily Pulse** — "Hey, these 3 licenses go critical today."
+- **Daily E-mails** — "Hey, these 3 licenses go critical today."
 - **Expiration Reminders** — So you don't forget to clean up what's already past.
 
 ---
@@ -69,7 +67,7 @@ Download the latest release:
 
 Or if you prefer, you can clone the repository and run it locally.
 
-If you already have Python installed, you're 3 commands away:
+If you already have Python installed, you're 2 commands away:
 
 ```bash
 # 1. Set up the environment
