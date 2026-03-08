@@ -1,8 +1,10 @@
+[![Latest Release](https://img.shields.io/github/v/release/solopx/keyoclock?style=for-the-badge&color=green)](https://github.com/solopx/keyoclock/releases/latest)
+
 # Key O'Clock
 
 > **Because expired licenses don't warn you — they just stop your business cold.**
 
-Key O'Clock is your command center for software asset and license management. No more lost Excel spreadsheets, sticky notes on the monitor, or that gut-drop feeling when a critical application stops working because someone forgot to renew the contract.
+Key O'Clock is your command center for software asset and license management. No more lost Excel spreadsheets, sticky notes on the monitor, or that wonderfull meetings with the management board when a critical application stops your company because someone forgot to renew the contract.
 
 ![Logo Key O'Clock](./docs/img/logo.png)
 
