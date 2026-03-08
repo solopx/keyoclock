@@ -1,3 +1,5 @@
+[![Latest Release](https://img.shields.io/github/v/release/RafaelCartarozzi/LicManager?style=for-the-badge&color=green)](https://github.com/RafaelCartarozzi/LicManager/releases/latest)
+
 # Key O'Clock
 
 ### [Read this in english](README.en.md)
