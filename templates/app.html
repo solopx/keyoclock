@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Key O'Clock</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+
+    <script>
+        (function() {
+            try {
+                const user = {{ session.get('username', '') | tojson }};
+                const getStorageKey = function(name) {
+                    return user ? 'keyoclock-' + name + '-' + user : 'keyoclock-' + name;
+                };
+
+                const theme = localStorage.getItem(getStorageKey('theme'));
+                if (theme && theme !== 'dark') {
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+
+                const fontSize = localStorage.getItem(getStorageKey('fontsize'));
+                if (fontSize && fontSize !== 'md') {
+                    document.documentElement.setAttribute('data-fontsize', fontSize);
+                }
+            } catch (e) {
+                console.warn("Falha ao carregar preferências do LocalStorage:", e);
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="/static/css/app.css">
+
+    <meta name="session-user" content="{{ session.get('username', '') | e }}">
+    <meta name="session-role" content="{{ session.get('role', 'user') | e }}">
+    
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">
+      <img src="{{ url_for('static', filename='images/logo-1.png') }}" alt="Key O'Clock" class="sidebar-logo">
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <div class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard')"><span class="ni">&#128202;</span> Dashboard</div>
+      <div class="nav-item"        id="nav-inventory" onclick="showPage('inventory')"><span class="ni">&#128230;</span> Inventário</div>
+      <div class="nav-item"        id="nav-licenses"   onclick="showPage('licenses')"><span class="ni">&#128273;</span> Licenças</div>
+      <div class="nav-item"        id="nav-contracts"  onclick="showPage('contracts')"><span class="ni">&#128196;</span> Contratos</div>
+      <div class="nav-item"        id="nav-costs"      onclick="showPage('costs')"><span class="ni">&#128181;</span> Custos</div>
+      <div class="nav-item"        id="nav-reports"   onclick="showPage('reports')"><span class="ni">&#128200;</span> Reports</div>
+</div>
+    </div>
+    <div class="nav-section" id="admin-nav" style="display:none">
+      <div class="nav-label">Administração</div>
+      <div class="nav-item" id="nav-admin"    onclick="showPage('admin')"><span class="ni">&#128101;</span> Usuários</div>
+      <div class="nav-item" id="nav-audit"    onclick="showPage('audit')"><span class="ni">&#128203;</span> Auditoria</div>
+      <div class="nav-item" id="nav-settings" onclick="showPage('settings')"><span class="ni">&#9881;</span> Configurações</div>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="user-avatar">A</div>
+      <div class="user-details">
+        <div class="uname" id="user-name">admin</div>
+        <div class="urole" id="user-role">Administrador</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="window.location='/logout'">Sair</button>
+  </div>
+</aside>
+
+<main class="main">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div><h1>Dashboard</h1><p>Visão Geral de licenças, grupos e datas de vencimento</p></div>
+    </div>
+
+    <div class="dash-top-labels">
+      <div class="dash-zone-label dtl-main">Visão Geral</div>
+      <div class="dash-zone-label dtl-clock">Próximo Vencimento</div>
+    </div>
+
+    <div class="dash-layout">
+
+      <div class="dash-content">
+        <div class="stat-grid stat-grid-exec" id="dash-exec"></div>
+        <div id="dash-status-bar" class="dash-status-bar"></div>
+        <div class="dash-main-header">
+          <span class="dash-zone-label" id="dash-groups-label">Grupos de Licenças</span>
+          <a class="dash-see-all" onclick="showPage('inventory')">Ver todos</a>
+        </div>
+        <div id="dash-divisions"></div>
+      </div>
+
+      <div class="dash-sidebar">
+        <div class="expiry-clock-wrap">
+          <div id="dash-expiry-clock" class="expiry-clock" onclick="showPage('licenses')" title="Ver licenças"></div>
+        </div>
+        <div class="dash-sidebar-alerts">
+          <div class="dash-main-header">
+            <span class="dash-zone-label">Alertas de Vencimento</span>
+          </div>
+          <div class="alert-list" id="dash-alerts"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- INVENTÁRIO -->
+  <div class="page" id="page-inventory">
+    <div class="page-header">
+      <div><h1>Gerenciamento de Inventário</h1><p>Gerenciamento de Grupos, Listas e Itens Licenciados</p></div>
+      <button class="btn btn-primary" onclick="openDivisionModal()">+ Novo Grupo</button>
+    </div>
+    <div class="inv-page">
+      <div class="inv-toolbar">
+        <input class="inv-search" id="inv-search" type="text" placeholder="Filtrar..." oninput="filterInventory()">
+        <button class="btn btn-secondary btn-sm" onclick="expandAllDivs()">Expandir tudo</button>
+        <button class="btn btn-secondary btn-sm" onclick="collapseAllDivs()">Recolher tudo</button>
+      </div>
+      <div class="inv-scroll" id="inv-tree-root"></div>
+    </div>
+  </div>
+
+  <!-- LICENCAS -->
+  <div class="page" id="page-licenses">
+    <div class="page-header">
+      <div><h1>Licenças</h1><p>Controle e monitoramento</p></div>
+    </div>
+    <div class="stat-grid" id="lic-stats"></div>
+    <div class="search-bar">
+      <input type="text" class="search-input" id="lic-search" placeholder="Buscar por item, grupo, contrato..." oninput="filterLicenses()">
+      <div class="tab-bar">
+        <div class="tab active" data-filter="all"       onclick="setLicTab('all',this)">Todas</div>
+        <div class="tab"        data-filter="valid"     onclick="setLicTab('valid',this)">Saudáveis</div>
+        <div class="tab"        data-filter="critical"  onclick="setLicTab('critical',this)">Crítico</div>
+        <div class="tab"        data-filter="warning"   onclick="setLicTab('warning',this)">Aviso</div>
+        <div class="tab"        data-filter="soon"      onclick="setLicTab('soon',this)">Atenção</div>
+        <div class="tab"        data-filter="expired"   onclick="setLicTab('expired',this)">Expiradas</div>
+        <div class="tab"        data-filter="perpetual" onclick="setLicTab('perpetual',this)">Vitalícias</div>
+      </div>
+    </div>
+    <div id="lic-pagination"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Item</th><th>Localização</th><th>Tipo</th><th style="text-align:center">Qtd</th><th>Contrato</th><th>Início</th><th>Fim</th><th>Status</th><th>Dias</th></tr></thead>
+        <tbody id="lic-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CONTRATOS -->
+  <div class="page" id="page-contracts">
+    <div class="page-header">
+      <div><h1>Contratos</h1><p>Contratos vinculados às licenças cadastradas</p></div>
+    </div>
+    <div class="search-bar">
+      <input type="text" class="search-input" id="contracts-search"
+             placeholder="Buscar contrato..." oninput="filterContracts()">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:28px"></th>
+            <th>Contrato</th>
+            <th style="text-align:center">Registros</th>
+            <th style="text-align:center">Qtd. de Licenças</th>
+          </tr>
+        </thead>
+        <tbody id="contracts-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CUSTOS -->
+  <div class="page" id="page-costs">
+    <div class="page-header">
+      <div><h1>Custos</h1><p>Análise e controle de custos de licenças</p></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;height:300px;flex-direction:column;gap:12px">
+      <div style="font-size:40px">&#128181;</div>
+      <div style="font-size:18px;font-weight:600">Em breve</div>
+      <div style="font-size:13px;color:var(--text3)">Módulo de análise de custos em desenvolvimento.</div>
+    </div>
+  </div>
+
+  <!-- REPORTS -->
+  <div class="page" id="page-reports">
+    <div class="page-header">
+      <div><h1>Relatórios</h1><p>Relatórios analíticos e exportação de dados</p></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-secondary" onclick="exportReport('xlsx')">Exportar XLSX</button>
+        <button class="btn btn-secondary" onclick="exportReport('pdf')">Exportar PDF</button>
+      </div>
+    </div>
+    <div class="reports-tabs">
+      <div class="reports-tab active" data-tab="overview"  onclick="switchReportTab('overview')">Visão Geral</div>
+      <div class="reports-tab"        data-tab="validity"  onclick="switchReportTab('validity')">Por Validade</div>
+      <div class="reports-tab"        data-tab="contracts" onclick="switchReportTab('contracts')">Por Contrato</div>
+      <div class="reports-tab"        data-tab="divisions" onclick="switchReportTab('divisions')">Por Grupo</div>
+      <div class="reports-tab"        data-tab="costs"     onclick="switchReportTab('costs')">Por Custo</div>
+    </div>
+    <div id="reports-content"></div>
+  </div>
+
+  <!-- CONFIGURAÇÕES -->
+  <div class="page" id="page-settings">
+    <div class="page-header">
+      <div><h1>Configurações</h1><p>Preferências e configurações do sistema</p></div>
+    </div>
+    <div class="settings-section">
+
+      <!-- Grade de 3 cards de entrada -->
+      <div style="display:flex;gap:16px;align-items:stretch">
+
+        <!-- Personalização do Sistema (ativo, clicável) -->
+        <div id="personalization-card" class="settings-entry" onclick="togglePersonalization()">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div style="font-size:22px;margin-bottom:10px">&#127912;</div>
+            <span class="settings-entry-chevron">&#9660;</span>
+          </div>
+          <div style="font-weight:600;font-size:15px;margin-bottom:6px">Personalização do Sistema</div>
+          <div style="font-size:13px;color:var(--text3)">Alterar tema da interface, tamanho de fonte e estilo do widget de relógio.</div>
+        </div>
+
+        <!-- Certificados HTTPS (admin only, clicável) -->
+        <div id="cert-card" class="settings-entry" onclick="toggleCertificates()" style="display:none">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div style="font-size:22px;margin-bottom:10px">&#128274;</div>
+            <span class="cert-chevron settings-entry-chevron">&#9660;</span>
+          </div>
+          <div style="font-weight:600;font-size:15px;margin-bottom:6px">Certificados HTTPS</div>
+          <div style="font-size:13px;color:var(--text3)">Gerenciar certificado TLS para HTTPS.</div>
+        </div>
+
+        <!-- Banco de Dados (admin only, clicável) -->
+        <div id="db-card" class="settings-entry" onclick="toggleDatabase()" style="display:none">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div style="font-size:22px;margin-bottom:10px">&#128452;</div>
+            <span class="db-chevron settings-entry-chevron">&#9660;</span>
+          </div>
+          <div style="font-weight:600;font-size:15px;margin-bottom:6px">Banco de Dados</div>
+          <div style="font-size:13px;color:var(--text3)">Localização, tamanho e backup do banco de dados.</div>
+        </div>
+
+        <!-- E-mail (admin only, clicável) -->
+        <div id="email-card" class="settings-entry" onclick="toggleEmail()" style="display:none">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div style="font-size:22px;margin-bottom:10px">&#128231;</div>
+            <span class="email-chevron settings-entry-chevron">&#9660;</span>
+          </div>
+          <div style="font-weight:600;font-size:15px;margin-bottom:6px">E-mail</div>
+          <div style="font-size:13px;color:var(--text3)">Configurar servidor SMTP e notificações por e-mail.</div>
+        </div>
+
+        <!-- Agendamentos e Automações (admin only, clicável) -->
+        <div id="sched-card" class="settings-entry" onclick="toggleSchedule()" style="display:none">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div style="font-size:22px;margin-bottom:10px">&#128202;</div>
+            <span class="sched-chevron settings-entry-chevron">&#9660;</span>
+          </div>
+          <div style="font-weight:600;font-size:15px;margin-bottom:6px">Agendamentos e Automações</div>
+          <div style="font-size:13px;color:var(--text3)">Envio automático de relatórios e alertas por e-mail.</div>
+        </div>
+
+      </div>
+
+      <!-- Painel expansível de personalização (fechado por padrão) -->
+      <div id="personalization-panel" style="display:none">
+
+        <!-- Card: Cores do Sistema -->
+        <div class="settings-card" style="margin-bottom:16px">
+          <div class="settings-card-title" style="margin-bottom:4px">&#127912; Cores do Sistema</div>
+          <div class="settings-card-desc">Selecione o tema de interface.</div>
+          <div class="theme-swatch-grid">
+            <button class="theme-swatch theme-btn" data-theme="dark" onclick="setTheme('dark')">
+              <div class="tsp-preview"><div class="tsp-top" style="background:#0d1b2a"></div><div class="tsp-bottom" style="background:#1a2d45"><div class="tsp-accent" style="background:#2563eb"></div></div></div>
+              <span>Escuro</span>
+            </button>
+            <button class="theme-swatch theme-btn" data-theme="light" onclick="setTheme('light')">
+              <div class="tsp-preview"><div class="tsp-top" style="background:#f0f4f8"></div><div class="tsp-bottom" style="background:#e2e8f0"><div class="tsp-accent" style="background:#2563eb"></div></div></div>
+              <span>Claro</span>
+            </button>
+            <button class="theme-swatch theme-btn" data-theme="midnight" onclick="setTheme('midnight')">
+              <div class="tsp-preview"><div class="tsp-top" style="background:#080812"></div><div class="tsp-bottom" style="background:#0f0f1e"><div class="tsp-accent" style="background:#6366f1"></div></div></div>
+              <span>Meia-Noite</span>
+            </button>
+            <button class="theme-swatch theme-btn" data-theme="Palmeiras" onclick="setTheme('Palmeiras')">
+              <div class="tsp-preview"><div class="tsp-top" style="background:#081410"></div><div class="tsp-bottom" style="background:#0d2218"><div class="tsp-accent" style="background:#10b981"></div></div></div>
+              <span>Palmeiras</span>
+            </button>
+            <button class="theme-swatch theme-btn" data-theme="sunset" onclick="setTheme('sunset')">
+              <div class="tsp-preview"><div class="tsp-top" style="background:#160c04"></div><div class="tsp-bottom" style="background:#261408"><div class="tsp-accent" style="background:#f97316"></div></div></div>
+              <span>Pôr do Sol</span>
+            </button>
+            <button class="theme-swatch theme-btn" data-theme="slate" onclick="setTheme('slate')">
+              <div class="tsp-preview"><div class="tsp-top" style="background:#1a2230"></div><div class="tsp-bottom" style="background:#243040"><div class="tsp-accent" style="background:#38bdf8"></div></div></div>
+              <span>Ardósia</span>
+            </button>
+            <button class="theme-swatch theme-btn" data-theme="hellokitty" onclick="setTheme('hellokitty')">
+              <div class="tsp-preview"><div class="tsp-top" style="background:#fff0f5"></div><div class="tsp-bottom" style="background:#fce4ec"><div class="tsp-accent" style="background:#ec407a"></div></div></div>
+              <span>Hello Kitty</span>
+            </button>
+            <button class="theme-swatch theme-btn" data-theme="darkkitty" onclick="setTheme('darkkitty')">
+              <div class="tsp-preview"><div class="tsp-top" style="background:#1a0510"></div><div class="tsp-bottom" style="background:#2d0a1e"><div class="tsp-accent" style="background:#e91e8c"></div></div></div>
+              <span>Dark Kitty</span>
+            </button>
+            <button class="theme-swatch theme-btn" data-theme="windows-xp" onclick="setTheme('windows-xp')">
+              <div class="tsp-preview"><div class="tsp-top" style="background:#0055e5"></div> <div class="tsp-bottom" style="background:#ece9d8"><div class="tsp-accent" style="background:#228b22"></div></div></div>
+              <span>Windows XP</span>
+            </button>
+            <button class="theme-swatch theme-btn" data-theme="alto-contraste" onclick="setTheme('alto-contraste')">
+              <div class="tsp-preview"><div class="tsp-top" style="background:#002244"></div> <div class="tsp-bottom" style="background:#001a33"><div class="tsp-accent" style="background:#ffff00"></div></div></div>
+              <span>Alto Contraste</span>
+            </button>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card: Tamanho da Fonte -->
+        <div class="settings-card" style="margin-bottom:16px">
+          <div class="settings-card-title" style="margin-bottom:4px">Aa Tamanho da Fonte</div>
+          <div class="settings-card-desc">Ajuste o tamanho do texto exibido no sistema.</div>
+          <div class="font-size-control">
+            <button id="font-btn-minus" class="font-size-btn" onclick="setFontSize(-1)" title="Diminuir fonte">A−</button>
+            <span id="font-size-label" class="font-size-label">Normal</span>
+            <button id="font-btn-plus"  class="font-size-btn" onclick="setFontSize(+1)"  title="Aumentar fonte">A+</button>
+          </div>
+        </div>
+
+<div class="settings-card">
+  <div class="settings-card-title" style="margin-bottom:4px">&#128336; Estilo do Relógio</div>
+  <div class="settings-card-desc">Estilo do widget "Próximo Vencimento" no dashboard.</div>
+  <div class="clock-style-grid">
+    
+    <button class="clock-style-btn" data-clock="ring" onclick="setClockStyle('ring')">
+      <div class="clock-preview">
+        <svg width="44" height="44" viewBox="0 0 44 44">
+          <circle cx="22" cy="22" r="17" fill="none" class="preview-svg-track" stroke-width="4"/>
+          <circle cx="22" cy="22" r="17" fill="none" class="preview-svg-arc" stroke-width="4"
+            stroke-linecap="round" stroke-dasharray="106.8" stroke-dashoffset="40"
+            transform="rotate(-90 22 22)"/>
+        </svg>
+      </div>
+      <span>Anel</span>
+    </button>
+
+    <button class="clock-style-btn" data-clock="arc" onclick="setClockStyle('arc')">
+      <div class="clock-preview">
+        <svg width="44" height="28" viewBox="0 0 44 28">
+          <circle cx="22" cy="22" r="17" fill="none" class="preview-svg-track" stroke-width="4"
+            stroke-dasharray="53.4 200" transform="rotate(180 22 22)"/>
+          <circle cx="22" cy="22" r="17" fill="none" class="preview-svg-arc" stroke-width="4"
+            stroke-linecap="round" stroke-dasharray="34.7 200"
+            transform="rotate(180 22 22)"/>
+        </svg>
+      </div>
+      <span>Arco</span>
+    </button>
+
+    <button class="clock-style-btn" data-clock="digital" onclick="setClockStyle('digital')">
+      <div class="clock-preview" style="background: var(--navy3); border-radius: 4px; border: 1px solid var(--border);">
+        <div style="font-family: var(--font-mono); font-size: 16px; color: var(--cyan); letter-spacing: 1px;">23:59</div>
+      </div>
+      <span>Digital</span>
+    </button>
+
+    <button class="clock-style-btn" data-clock="classic" onclick="setClockStyle('classic')">
+      <div class="clock-preview">
+        <svg width="44" height="44" viewBox="0 0 44 44">
+          <circle cx="22" cy="22" r="19" fill="none" stroke="var(--text3)" stroke-width="1.5"/>
+          <line x1="22" y1="22" x2="22" y2="12" stroke="var(--text)" stroke-width="2" stroke-linecap="round" />
+          <line x1="22" y1="22" x2="30" y2="22" stroke="var(--blue)" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </div>
+      <span>Clássico</span>
+    </button>
+
+    <button class="clock-style-btn" data-clock="bar" onclick="setClockStyle('bar')">
+      <div class="clock-preview" style="flex-direction:column;gap:4px">
+        <div class="preview-bar-wrap"><div class="preview-bar-fill"></div></div>
+        <div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--blue-l)">65d</div>
+      </div>
+      <span>Barra</span>
+    </button>
+
+    <button class="clock-style-btn" data-clock="minimal" onclick="setClockStyle('minimal')">
+      <div class="clock-preview" style="flex-direction:column;gap:2px">
+        <div class="preview-num">65</div>
+        <div class="preview-num-sub">dias</div>
+      </div>
+      <span>Mínimo</span>
+    </button>
+    
+    <button class="clock-style-btn" data-clock="hourglass" onclick="setClockStyle('hourglass')">
+      <div class="clock-preview">
+        <svg width="44" height="44" viewBox="0 0 44 44">
+          <path d="M12 8 H32 L22 22 L12 8 Z" fill="none" stroke="var(--text3)" stroke-width="2"/>
+          <path d="M12 36 H32 L22 22 L12 36 Z" fill="none" stroke="var(--text3)" stroke-width="2"/>
+          <path d="M17 15 H27 L22 22 Z" fill="var(--text)" opacity="0.5" />
+          <path d="M16 36 H28 L22 30 Z" fill="var(--text)" />
+          <line x1="22" y1="22" x2="22" y2="30" stroke="var(--text3)" stroke-dasharray="2 1" />
+        </svg>
+      </div>
+      <span>Ampulheta</span>
+    </button>
+
+    <button class="clock-style-btn" data-clock="speedometer" onclick="setClockStyle('speedometer')">
+      <div class="clock-preview">
+        <svg width="44" height="30" viewBox="0 0 44 30">
+          <path d="M 5 26 A 17 17 0 0 0 39 26" fill="none" class="preview-svg-track" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M 5 26 A 17 17 0 0 0 22 9"  fill="none" class="preview-svg-arc"   stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="22" y1="26" x2="22" y2="9" class="preview-svg-arc" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="22" cy="26" r="2.5" fill="var(--card)" stroke="var(--blue-l)" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <span>Odômetro</span>
+    </button>
+
+    <button class="clock-style-btn" data-clock="flip" onclick="setClockStyle('flip')">
+      <div class="clock-preview" style="flex-direction:column; gap:2px">
+        <div style="width:34px; height:30px; background:var(--navy3); border-radius:4px; border:1px solid var(--border); position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden">
+          <div style="position:absolute; top:50%; width:100%; height:1px; background:rgba(0,0,0,0.2)"></div>
+          <span style="font-family:var(--font-mono); font-size:18px; font-weight:700; color:var(--text)">25</span>
+        </div>
+        <span style="font-size:9px; text-transform:uppercase; opacity:0.7">Flip</span>
+      </div>
+      <span>Calendário</span>
+    </button>
+
+  </div>
+</div>
+
+      </div>
+
+    <!-- Painel expansível de Certificados HTTPS (fechado por padrão) -->
+    <div id="cert-panel" style="display:none">
+
+      <!-- Zona 1: Status atual (somente leitura) -->
+      <div class="settings-card" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="font-weight:600;font-size:15px">Status atual</span>
+          <span id="cert-status-badge" style="display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;background:rgba(245,158,11,0.15);color:var(--yellow)">Carregando...</span>
+        </div>
+
+        <div id="cert-no-cert-block" style="display:none;font-size:13px;color:var(--text3)">
+          Nenhum certificado configurado. Use o painel abaixo para gerar ou importar.
+        </div>
+
+        <div id="cert-info-block" style="display:none">
+          <div id="cert-type-label" style="font-size:13px;color:var(--text3);margin-bottom:12px"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+            <div style="background:var(--surface2,rgba(128,128,128,0.07));border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Domínios</div>
+              <div id="cert-info-san" style="font-size:13px;font-weight:500;word-break:break-all"></div>
+            </div>
+            <div style="background:var(--surface2,rgba(128,128,128,0.07));border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Validade</div>
+              <div id="cert-info-expires" style="font-size:13px;font-weight:500"></div>
+            </div>
+          </div>
+          <button onclick="_toggleTechDetails(this)" style="font-size:12px;color:var(--text3);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px">Detalhes técnicos &#9656;</button>
+          <div id="cert-tech-details" style="display:none;margin-top:10px;gap:5px;font-size:12px">
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span style="color:var(--text3);min-width:90px;flex-shrink:0">Certificado</span>
+              <code id="cert-info-path" style="word-break:break-all;color:var(--text3)"></code>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+              <span style="color:var(--text3);min-width:90px;flex-shrink:0">Chave privada</span>
+              <code id="cert-info-key" style="word-break:break-all;color:var(--text3)"></code>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zona 2: Configuração -->
+      <div class="settings-card">
+        <div style="font-weight:600;font-size:14px;margin-bottom:14px">Configurar certificado</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+          <div id="cert-method-auto" onclick="_selectCertMethod('auto')" style="border:2px solid var(--border);border-radius:8px;padding:12px 10px;cursor:pointer;transition:border-color .15s,background .15s;text-align:center">
+            <div style="font-size:20px;margin-bottom:5px">&#128274;</div>
+            <div style="font-weight:600;font-size:12px;margin-bottom:2px">Auto-assinado</div>
+            <div style="font-size:11px;color:var(--text3)">Gerado localmente</div>
+          </div>
+          <div id="cert-method-upload" onclick="_selectCertMethod('upload')" style="border:2px solid var(--border);border-radius:8px;padding:12px 10px;cursor:pointer;transition:border-color .15s,background .15s;text-align:center">
+            <div style="font-size:20px;margin-bottom:5px">&#128194;</div>
+            <div style="font-weight:600;font-size:12px;margin-bottom:2px">Upload PEM</div>
+            <div style="font-size:11px;color:var(--text3)">Certificado próprio</div>
+          </div>
+        </div>
+
+        <!-- Formulário: Auto-assinado -->
+        <div id="cert-form-auto" style="display:none">
+          <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:12px">
+            O browser exibirá aviso de segurança — clique em <strong>Avançado</strong> e <strong>Prosseguir</strong>.
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="regenerateCert()">Gerar novo certificado</button>
+            <span id="cert-regen-status" style="font-size:12px;color:var(--text3)"></span>
+          </div>
+        </div>
+
+        <!-- Formulário: Upload PEM -->
+        <div id="cert-form-upload" style="display:none">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Arquivos PEM sem senha. O certificado atual será substituído.</div>
+          <div style="display:grid;gap:10px;margin-bottom:12px">
+            <div>
+              <label for="cert-upload-cert" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Certificado (.pem / .crt)</label>
+              <input type="file" id="cert-upload-cert" accept=".pem,.crt,.cer" style="font-size:13px;width:100%">
+            </div>
+            <div>
+              <label for="cert-upload-key" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Chave privada (.pem / .key)</label>
+              <input type="file" id="cert-upload-key" accept=".pem,.key" style="font-size:13px;width:100%">
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-primary btn-sm" onclick="uploadCert()">Enviar certificado</button>
+            <span id="cert-upload-status" style="font-size:12px;color:var(--text3)"></span>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--text3)">
+          Reinicie a aplicação para que as alterações tenham efeito.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Painel expansível de e-mail (fechado por padrão) -->
+    <div id="email-panel" style="display:none">
+
+      <!-- Servidor SMTP -->
+      <div class="settings-card" style="margin-bottom:16px">
+        <div style="font-weight:600;font-size:15px;margin-bottom:16px">Servidor SMTP</div>
+
+        <!-- Linha 1: Servidor + Porta -->
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
+          <div style="flex:1;min-width:180px">
+            <label for="email-host" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Endereço do servidor</label>
+            <input type="text" id="email-host" placeholder="smtp.gmail.com" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+          <div style="width:90px">
+            <label for="email-port" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Porta</label>
+            <input type="number" id="email-port" value="587" min="1" max="65535" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+        </div>
+
+        <!-- Linha 2: Usuário + Senha -->
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
+          <div style="flex:1;min-width:160px">
+            <label for="email-user" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Usuário <span style="color:var(--text3);font-weight:400">(opcional)</span></label>
+            <input type="text" id="email-user" placeholder="usuario@empresa.com" autocomplete="off" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+          <div style="flex:1;min-width:160px">
+            <label for="email-password" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Senha <span style="color:var(--text3);font-weight:400">(opcional)</span></label>
+            <input type="password" id="email-password" placeholder="Deixe em branco para manter" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+        </div>
+
+        <!-- Linha 3: E-mail Remetente + Nome de Exibição -->
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px">
+          <div style="flex:1;min-width:160px">
+            <label for="email-from" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">E-mail do remetente</label>
+            <input type="email" id="email-from" placeholder="alertas@empresa.com" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+          <div style="flex:1;min-width:160px">
+            <label for="email-display-name" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Nome de exibição</label>
+            <input type="text" id="email-display-name" placeholder="Alertas Key O'Clock" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-primary btn-sm" onclick="saveEmailConfig()">Salvar</button>
+          <span id="email-save-status" style="font-size:12px;color:var(--text3)"></span>
+        </div>
+      </div>
+
+      <!-- Envio de teste -->
+      <div class="settings-card">
+        <div style="font-weight:600;font-size:15px;margin-bottom:12px">Envio de teste</div>
+        <div style="margin-bottom:12px">
+          <label for="email-test-to" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Destinatário</label>
+          <input type="email" id="email-test-to" placeholder="destinatario@empresa.com" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" onclick="sendTestEmail()">Enviar mensagem de teste</button>
+          <span id="email-test-status" style="font-size:12px;color:var(--text3)"></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Painel expansível de agendamentos (fechado por padrão) -->
+    <div id="sched-panel" style="display:none">
+
+      <!-- Envio por Período -->
+      <div class="settings-card" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <input type="checkbox" id="sched-periodic-enabled" onchange="onSchedPeriodicToggle()" style="width:16px;height:16px;cursor:pointer;accent-color:var(--blue)">
+          <label for="sched-periodic-enabled" style="font-weight:600;font-size:15px;cursor:pointer">Envio por Período</label>
+        </div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:12px">Envia o relatório completo de licenças em PDF para o destinatário a cada intervalo definido.</div>
+        <div id="sched-periodic-body" style="display:none">
+          <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
+            <div style="flex:1;min-width:180px">
+              <label for="sched-periodic-dest" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Destinatário</label>
+              <input type="email" id="sched-periodic-dest" placeholder="gestor@empresa.com" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+            </div>
+            <div style="width:140px">
+              <label for="sched-periodic-days" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Intervalo</label>
+              <select id="sched-periodic-days" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-size:13px">
+                <option value="7">7 dias</option>
+                <option value="15">15 dias</option>
+                <option value="30" selected>30 dias</option>
+                <option value="60">60 dias</option>
+                <option value="90">90 dias</option>
+              </select>
+            </div>
+          </div>
+          <div id="sched-periodic-last" style="font-size:12px;color:var(--text3)"></div>
+        </div>
+      </div>
+
+      <!-- Envio por Status -->
+      <div class="settings-card" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <input type="checkbox" id="sched-status-enabled" onchange="onSchedStatusToggle()" style="width:16px;height:16px;cursor:pointer;accent-color:var(--blue)">
+          <label for="sched-status-enabled" style="font-weight:600;font-size:15px;cursor:pointer">Envio por Status</label>
+        </div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:12px">Envia um alerta diário quando houver licenças com status <strong>Atenção</strong>, <strong>Aviso</strong> ou <strong>Crítico</strong>.</div>
+        <div id="sched-status-body" style="display:none">
+          <div style="margin-bottom:12px">
+            <label for="sched-status-dest" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Destinatário</label>
+            <input type="email" id="sched-status-dest" placeholder="gestor@empresa.com" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+          <div id="sched-status-last" style="font-size:12px;color:var(--text3)"></div>
+        </div>
+      </div>
+
+      <!-- Lembrete de Expiradas -->
+      <div class="settings-card" style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <input type="checkbox" id="sched-expired-enabled" onchange="onSchedExpiredToggle()" style="width:16px;height:16px;cursor:pointer;accent-color:var(--blue)">
+          <label for="sched-expired-enabled" style="font-weight:600;font-size:15px;cursor:pointer">Lembrete de Expiradas</label>
+        </div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:12px">Envia um lembrete periódico listando todas as licenças com status <strong>Expirado</strong>.</div>
+        <div id="sched-expired-body" style="display:none">
+          <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
+            <div style="flex:1;min-width:180px">
+              <label for="sched-expired-dest" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Destinatário</label>
+              <input type="email" id="sched-expired-dest" placeholder="gestor@empresa.com" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+            </div>
+            <div style="width:140px">
+              <label for="sched-expired-days" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Intervalo</label>
+              <select id="sched-expired-days" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-size:13px">
+                <option value="7">7 dias</option>
+                <option value="15">15 dias</option>
+                <option value="30" selected>30 dias</option>
+                <option value="60">60 dias</option>
+                <option value="90">90 dias</option>
+              </select>
+            </div>
+          </div>
+          <div id="sched-expired-last" style="font-size:12px;color:var(--text3)"></div>
+        </div>
+      </div>
+
+      <!-- Salvar -->
+      <div class="settings-card">
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-primary btn-sm" onclick="saveSchedConfig()">Salvar</button>
+          <span id="sched-save-status" style="font-size:12px;color:var(--text3)"></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Painel expansível de banco de dados (fechado por padrão) -->
+    <div id="db-panel" style="display:none">
+
+      <!-- Informações -->
+      <div class="settings-card" style="margin-bottom:16px">
+        <div style="font-weight:600;font-size:15px;margin-bottom:14px">Informações</div>
+        <div style="display:grid;gap:8px;font-size:13px;margin-bottom:14px">
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <span style="color:var(--text3);min-width:90px;flex-shrink:0">Localização</span>
+            <code id="db-path" style="word-break:break-all;color:var(--text3)">Carregando...</code>
+          </div>
+          <div style="display:flex;gap:12px">
+            <span style="color:var(--text3);min-width:90px;flex-shrink:0">Tamanho</span>
+            <span id="db-size" style="font-weight:500">—</span>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="loadDbInfo()">Atualizar</button>
+      </div>
+
+      <!-- Exportar + Importar -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+        <div class="settings-card">
+          <div style="font-weight:600;font-size:15px;margin-bottom:8px">Exportar</div>
+          <div style="font-size:13px;color:var(--text3);margin-bottom:14px">Baixa uma cópia do banco de dados para backup local.</div>
+          <button class="btn btn-primary btn-sm" onclick="exportDb()">Exportar banco de dados</button>
+        </div>
+        <div class="settings-card">
+          <div style="font-weight:600;font-size:15px;margin-bottom:8px">Importar</div>
+          <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:6px;padding:10px 12px;font-size:12px;color:var(--yellow);margin-bottom:14px">
+            <strong>Atenção:</strong> a importação substituirá <strong>todos</strong> os dados atuais. O banco atual será salvo automaticamente como <code>keyoclock.db.bak</code> antes da substituição.
+          </div>
+          <div style="margin-bottom:12px">
+            <label for="db-import-file" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Arquivo do banco de dados (.db)</label>
+            <input type="file" id="db-import-file" accept=".db" style="font-size:13px;width:100%">
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="importDb()">Importar banco de dados</button>
+            <span id="db-import-status" style="font-size:12px;color:var(--text3)"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Limpeza de Dados -->
+      <div class="settings-card" style="margin-top:16px">
+        <div style="font-weight:600;font-size:15px;margin-bottom:8px">Limpeza de Dados</div>
+        <div style="font-size:13px;color:var(--text3);margin-bottom:14px">Remove permanentemente registros excluídos e compacta o banco de dados.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <label for="db-purge-deleted-days" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Registros excluídos há mais de</label>
+            <select id="db-purge-deleted-days" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-size:13px">
+              <option value="7">7 dias</option>
+              <option value="30" selected>30 dias</option>
+              <option value="90">90 dias</option>
+              <option value="180">180 dias</option>
+            </select>
+          </div>
+          <div>
+            <label for="db-purge-audit-days" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Manter auditoria dos últimos</label>
+            <select id="db-purge-audit-days" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-size:13px">
+              <option value="90">90 dias</option>
+              <option value="180">180 dias</option>
+              <option value="365" selected>1 ano</option>
+              <option value="730">2 anos</option>
+              <option value="99999">Nunca apagar</option>
+            </select>
+          </div>
+        </div>
+        <div id="db-purge-preview" style="font-size:12px;color:var(--text3);margin-bottom:12px;display:none"></div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-secondary btn-sm" onclick="previewPurge()">Verificar</button>
+          <button class="btn btn-danger btn-sm" onclick="executePurge()" id="db-purge-btn" style="display:none">Executar limpeza</button>
+          <span id="db-purge-status" style="font-size:12px;color:var(--text3)"></span>
+        </div>
+      </div>
+
+      <!-- Criptografia de Campos -->
+      <div class="settings-card" style="margin-top:16px" id="db-enc-card">
+        <div style="font-weight:600;font-size:15px;margin-bottom:4px">Criptografia</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Chave de criptografia para dados sensíveis</div>
+        <div id="db-enc-status" style="font-size:13px;color:var(--text3);margin-bottom:10px">Carregando...</div>
+        <div id="db-enc-change-wrap" style="display:none;margin-bottom:14px">
+          <button class="btn btn-secondary btn-sm" onclick="showEncSetup()">Alterar senha</button>
+        </div>
+        <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25);border-radius:6px;padding:10px 12px;font-size:12px;color:var(--text2);margin-bottom:14px">
+          <strong>Aviso:</strong> a senha <strong>não é armazenada</strong> pelo sistema e <strong>não pode ser recuperada</strong> em caso de perda. Guarde-a em local seguro. Sem a senha, campos cifrados ficam inacessíveis.
+        </div>
+        <div id="db-enc-restore-form" style="display:none">
+          <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:6px;padding:10px 12px;font-size:12px;color:var(--yellow);margin-bottom:12px">
+            <strong>Arquivo de chave não encontrado.</strong> Insira a senha para restaurar o acesso. Isso ocorre após migração de servidor ou perda de <code>instance/.enc_key</code>.
+          </div>
+          <div style="margin-bottom:10px">
+            <label for="db-enc-restore-inp" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Senha de criptografia</label>
+            <input type="password" id="db-enc-restore-inp" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-primary btn-sm" onclick="restoreEncKey()">Restaurar chave</button>
+            <span id="db-enc-restore-status" style="font-size:12px;color:var(--text3)"></span>
+          </div>
+        </div>
+        <div id="db-enc-setup-form" style="display:none">
+          <div id="db-enc-old-inp-wrap" style="display:none;margin-bottom:10px">
+            <label for="db-enc-old-inp" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Senha atual</label>
+            <input type="password" id="db-enc-old-inp" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+          <div style="margin-bottom:10px">
+            <label for="db-enc-new-inp" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Nova senha (mín. 8 caracteres)</label>
+            <input type="password" id="db-enc-new-inp" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+          <div style="margin-bottom:14px">
+            <label for="db-enc-confirm-inp" style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">Confirmar nova senha</label>
+            <input type="password" id="db-enc-confirm-inp" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2,rgba(128,128,128,0.07));color:var(--text);font-size:13px">
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn btn-primary btn-sm" onclick="setupEncryption()">Salvar senha</button>
+            <span id="db-enc-setup-status" style="font-size:12px;color:var(--text3)"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    </div>
+
+  </div>
+
+  <!-- AUDITORIA -->
+  <div class="page" id="page-audit">
+    <div class="page-header">
+      <div><h1>Auditoria</h1><p>Registros de criação, alteração e exclusão — últimos 500 eventos</p></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:flex-end">
+      <div class="field" style="flex:1;min-width:130px;margin-bottom:0">
+        <label for="audit-from">De</label>
+        <input type="date" id="audit-from">
+      </div>
+      <div class="field" style="flex:1;min-width:130px;margin-bottom:0">
+        <label for="audit-to">Até</label>
+        <input type="date" id="audit-to">
+      </div>
+      <div class="field" style="flex:1;min-width:130px;margin-bottom:0">
+        <label for="audit-entity">Entidade</label>
+        <select id="audit-entity">
+          <option value="">Todas</option>
+          <option value="division">Grupo</option>
+          <option value="device_list">Lista</option>
+          <option value="inventory_item">Item</option>
+          <option value="license">Licença</option>
+        </select>
+      </div>
+      <div class="field" style="flex:1;min-width:130px;margin-bottom:0">
+        <label for="audit-action">Ação</label>
+        <select id="audit-action">
+          <option value="">Todas</option>
+          <option value="create">Criação</option>
+          <option value="update">Alteração</option>
+          <option value="delete">Exclusão</option>
+        </select>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="loadAuditLogs()" style="height:36px;align-self:flex-end">Filtrar</button>
+    </div>
+    <div id="audit-pagination"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Entidade</th><th>Nome</th><th>Detalhes</th><th>IP</th></tr></thead>
+        <tbody id="audit-table-body">
+          <tr><td colspan="7" style="text-align:center;color:var(--text3);padding:24px">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="page" id="page-admin">
+    <div class="page-header">
+      <div><h1>Administração</h1><p>Gerenciamento de usuários</p></div>
+      <button class="btn btn-primary" onclick="openUserModal()">+ Novo Usuário</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Usuário</th><th>Email</th><th>Perfil</th><th>Status</th><th>Criado em</th><th>Ações</th></tr></thead>
+        <tbody id="users-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- MODALS -->
+<div class="overlay" id="modal-division">
+  <div class="modal">
+    <div class="modal-header"><h2 id="div-modal-title">Novo Grupo</h2><button class="modal-close" onclick="closeModal('modal-division')">x</button></div>
+    <div class="form-grid cols-1">
+      <input type="hidden" id="div-id">
+      <div class="field"><label for="div-name">Nome</label><input type="text" id="div-name" placeholder="Ex: Escritório Central" maxlength="255" required></div>
+      <div class="field"><label for="div-desc">Descrição</label><textarea id="div-desc" placeholder="Descrição opcional..." maxlength="1000"></textarea></div>
+      <div class="field"><label for="div-icon">Ícone</label>
+        <select id="div-icon">
+          <option value="&#127970;">&#127970; Prédio</option><option value="&#128421;">&#128421; Escritório</option>
+          <option value="&#128302;">&#128302; Laboratório</option><option value="&#127981;">&#127981; Fábrica</option>
+          <option value="&#128225;">&#128225; Datacenter</option><option value="&#127968;">&#127968; Filial</option>
+          <option value="&#127760;">&#127760; Rede</option>
+          <option value="&#128421;">&#128421; Hardware</option>
+          <option value="&#128190;">&#128190; Software</option>
+          <option value="&#128101;">&#128101; Usuários</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-division')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveDivision()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-list">
+  <div class="modal">
+    <div class="modal-header"><h2 id="list-modal-title">Nova Lista</h2><button class="modal-close" onclick="closeModal('modal-list')">x</button></div>
+    <input type="hidden" id="list-id"><input type="hidden" id="list-div-id">
+    <div class="field"><label for="list-name">Nome da Lista</label><input type="text" id="list-name" placeholder="Ex: Computadores, Roteadores..." maxlength="255" required></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-list')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveList()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-item">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2 id="item-modal-title">Novo Item</h2><button class="modal-close" onclick="closeModal('modal-item')">x</button></div>
+    <input type="hidden" id="item-id"><input type="hidden" id="item-list-id">
+    <div class="form-grid">
+      <div class="field span2"><label for="item-name">Nome</label><input type="text" id="item-name" placeholder="Ex: Dell Optiplex 7090" maxlength="255" required></div>
+      <div class="field"><label for="item-model">Modelo</label><input type="text" id="item-model" placeholder="Ex: Optiplex 7090" maxlength="255"></div>
+      <div class="field"><label for="item-manufacturer">Fabricante</label><input type="text" id="item-manufacturer" placeholder="Ex: Dell" maxlength="255"></div>
+      <div class="field span2"><label for="item-supplier">Fornecedor</label><input type="text" id="item-supplier" placeholder="Ex: Ingram Micro" maxlength="255"></div>
+      <div class="field span2"><label for="item-desc">Descrição</label><textarea id="item-desc" placeholder="Detalhes adicionais..." maxlength="1000"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-item')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveItem()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-license" style="z-index:1100">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2 id="lic-modal-title">Nova Licença</h2><button class="modal-close" onclick="closeModal('modal-license')">x</button></div>
+    <input type="hidden" id="lic-id"><input type="hidden" id="lic-item-id">
+    <div class="form-grid">
+      <div class="field"><label for="lic-type">Tipo</label>
+        <select id="lic-type">
+          <option value="suporte">Suporte</option>
+          <option value="manutencao">Manutenção</option>
+          <option value="funcionalidade">Funcionalidade</option>
+          <option value="oem">OEM</option>
+          <option value="device">Device-Based</option>
+          <option value="volume">Licenciamento por Volume</option>
+          <option value="subscription">Assinatura / Subscription</option>
+          <option value="cal">CAL</option>
+        </select>
+      </div>
+      <div class="field"><label for="lic-quantity">Quantidade</label><input type="number" id="lic-quantity" min="1" max="999999" value="1"></div>
+      <div class="field span2"><label for="lic-contract">Contrato</label><input type="text" id="lic-contract" placeholder="Ex: CTR-2024-0042" maxlength="255"></div>
+      <div class="field span2 checkbox-field">
+        <input type="checkbox" id="lic-perpetual" onchange="togglePerpetual()">
+        <label for="lic-perpetual" style="text-transform:none;font-size:13px;letter-spacing:0">Licença Vitalícia (sem data de expiração)</label>
+      </div>
+      <div class="field" id="field-start"><label for="lic-start">Data de Início</label><input type="date" id="lic-start"></div>
+      <div class="field" id="field-end"><label for="lic-end">Data de Fim</label><input type="date" id="lic-end"></div>
+      <div class="field span2"><label for="lic-notes">Observações</label><textarea id="lic-notes" placeholder="Número de série, chave de ativação..." maxlength="2000"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-license')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveLicense()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-item-detail">
+  <div class="modal modal-xl">
+    <div class="modal-header"><h2 id="detail-title">Licenças do Item</h2><button class="modal-close" onclick="closeModal('modal-item-detail')">x</button></div>
+    <div id="detail-info" class="detail-info-bar"></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+      <button class="btn btn-primary btn-sm" onclick="openLicenseModal()">+ Adicionar Licença</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>Qtd</th><th>Contrato</th><th>Vitalícia</th><th>Início</th><th>Fim</th><th>Status</th><th>Dias</th><th></th></tr></thead>
+        <tbody id="detail-lic-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-user">
+  <div class="modal">
+    <div class="modal-header"><h2 id="user-modal-title">Novo Usuário</h2><button class="modal-close" onclick="closeModal('modal-user')">x</button></div>
+    <input type="hidden" id="user-id">
+    <div class="form-grid cols-1">
+      <div class="field"><label for="u-username">Usuário</label><input type="text" id="u-username" placeholder="nome.sobrenome" maxlength="64"></div>
+      <div class="field"><label for="u-email">Email</label><input type="email" id="u-email" placeholder="email@empresa.com" maxlength="254"></div>
+      <div class="field"><label for="u-password">Senha <span id="pwd-hint" class="field-hint">(obrigatória para novo usuário)</span></label><input type="password" id="u-password" minlength="8" maxlength="128" autocomplete="new-password"></div>
+      <div class="field"><label for="u-role">Perfil</label><select id="u-role"><option value="user">Usuário</option><option value="admin">Administrador</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-user')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveUser()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-confirm">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header"><h2>Confirmar exclusão</h2><button class="modal-close" onclick="closeModal('modal-confirm')">x</button></div>
+    <p id="confirm-msg" class="confirm-msg"></p>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-confirm')">Cancelar</button>
+      <button class="btn btn-danger" id="confirm-btn">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/api.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.utils.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.dashboard.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.inventory.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.licenses.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.contracts.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.reports.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.admin.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.audit.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.certificates.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.email.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.schedule.js?v={{ js_version }}"></script>
+<script src="/static/js/ui.database.js?v={{ js_version }}"></script>
+<script src="/static/js/theme.js?v={{ js_version }}"></script>
+<script src="/static/js/app.js?v={{ js_version }}"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+Key O'Clock v1.0
+================
+
+Gerenciamento e monitoramento de licenças de software para ambientes corporativos.
+
+
+ACESSO
+------
+  Endereco : https://localhost:5000
+  Usuario  : admin
+  Senha    : admin
+
+  IMPORTANTE: No primeiro login, a troca de senha e obrigatoria.
+  Escolha uma senha segura com no minimo 8 caracteres.
+
+  AVISO DE SEGURANCA DO NAVEGADOR (normal na primeira vez):
+  O servico usa HTTPS com certificado auto-assinado.
+  O navegador exibira um aviso de seguranca -- isso e esperado.
+  Clique em [Avancado] e depois em [Prosseguir para localhost].
+
+
+SERVICO WINDOWS
+---------------
+  O servico KeyOClock e iniciado automaticamente com o Windows em modo HTTPS.
+
+  Para controlar manualmente (CMD como Administrador):
+    net start KeyOClock
+    net stop  KeyOClock
+
+  Para abrir no navegador:
+    Menu Iniciar > Key O'Clock > Key O'Clock (navegador)
+
+
+ARQUIVOS
+--------
+  Executavel  : C:\Program Files (x86)\Key O'Clock\keyoclock.exe
+  Banco dados : C:\ProgramData\Key O'Clock\keyoclock.db
+  Logs        : C:\ProgramData\Key O'Clock\logs\keyoclock.log
+
+
+CRIPTOGRAFIA DE DADOS (importante)
+-----------------------------------
+  A aplicacao suporta criptografia de campos sensiveis (contratos, senhas SMTP
+  e outros dados) com chave definida pelo administrador.
+
+  ATENCAO — leia com cuidado antes de ativar:
+    - A chave e definida na interface em: Configuracoes > Banco de Dados > Criptografia
+    - A chave NAO e armazenada no banco de dados; fica em arquivo separado
+      (C:\ProgramData\Key O'Clock\.enc_key)
+    - Se o arquivo de chave for perdido ou o servidor migrado sem copiar o arquivo,
+      os dados criptografados se tornam IRRECUPERAVEIS
+    - NAO existe mecanismo de recuperacao de chave — guarde a senha em local seguro
+      (ex: gerenciador de senhas corporativo)
+    - Recomendado: faca backup do arquivo .enc_key junto com o banco de dados
+
+
+HTTPS
+-----
+  O servico inicia em modo HTTPS por padrao.
+  O certificado auto-assinado e gerado automaticamente em:
+    C:\ProgramData\Key O'Clock\certs\
+
+  Para substituir por um certificado de CA confiavel (sem aviso no navegador):
+    Configuracoes [Admin] > Certificados HTTPS > Upload de certificado
+  Apos o upload, reinicie o servico para aplicar o novo certificado.
+
+
+NOTAS DA VERSAO v1.0
+---------------------
+  - Gerenciamento de licencas de software corporativas
+  - Controle de inventario (divisoes, listas, itens)
+  - Agendamento de alertas por e-mail
+  - Exportacao de relatorios em XLSX e PDF
+  - Criptografia de campos sensiveis (senha opcional)
+  - Suporte a HTTPS com certificado auto-assinado
+  - Auditoria de acoes dos usuarios
