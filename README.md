@@ -4,11 +4,9 @@
 
 ### [Read this in english](README.en.md)
 
-> **Porque licença vencida não avisa — ela simplesmente para o seu negócio.**
-
 ![Logo Key O'Clock](./docs/img/logo.png)
 
-O Key O'Clock é o seu centro de comando para gestão de ativos e licenças de software. Chega de planilhas de Excel perdidas, post-its colados no monitor ou reuniões maravilhosas com a gestão quando um software crítico para o funcionamento da sua empresa porque alguém esqueceu de renovar o contrato.
+O Key O'Clock é o seu centro de comando para gestão de ativos e licenças de software. Chega de planilhas de Excel perdidas, post-its colados no monitor ou aquelas reuniões maravilhosas com a gestão quando um software crítico para o funcionamento da sua empresa porque alguém esqueceu de renovar o contrato.
 
 ---
 ## Latest Release: v1.0 (Production Ready)
@@ -33,8 +31,8 @@ Estamos oficialmente em produção! A versão v1.0 do Key O'Clock consolida a ba
 ### Inventário Inteligente
 Organize tudo em uma estrutura de árvore **(Grupo → Lista → Item)**. É intuitivo como uma pasta de arquivos, mas com o poder de um banco de dados. Esqueceu de algo? O soft delete mantém seus dados em uma "quarentena" antes de sumirem para sempre.
 
-### Semáforo de Saúde (Status Automático)
-O sistema trabalha por você, classificando suas licenças em tempo real:
+### Semáforo de Saúde
+O sistema trabalha por você, classificando suas licenças:
 
 | | |
 |---|---|
@@ -44,9 +42,9 @@ O sistema trabalha por você, classificando suas licenças em tempo real:
 | 🟢 **Válida / Perpétua** (>90 dias)| Durma tranquilo. |
 
 ### Dashboard Executivo & Widgets Estilosos
-Não é só funcional — é bonito. Acompanhe a saúde do seu parque de software com gráficos claros e o nosso famoso e patenteado **Widget de Próximo Vencimento**.
+Não é só funcional — é bonito. Acompanhe a saúde de seus contratos com gráficos claros e o nosso famoso e patenteado **Widget de Próximo Vencimento**.
 
-Escolha seu estilo: Do clássico **Odômetro** ao nostálgico **Digital**, ou até uma **Ampulheta** para os mais dramáticos. São 9 estilos no total.
+Escolha seu estilo: Do clássico **Odômetro** ao nostálgico **Digital**, ou até uma **Ampulheta** para os mais requintados. São 9 estilos no total.
 
 ![widgets](docs\img\personalizacao-widget.gif)
 
@@ -54,7 +52,7 @@ Escolha seu estilo: Do clássico **Odômetro** ao nostálgico **Digital**, ou at
 O Key O'Clock envia relatórios e alertas automáticos diretamente para o seu e-mail:
 
 - **Relatório Periódico** — Um PDF completo no seu e-mail a cada X dias.
-- **Ronda Diária** — "Ei, estas 3 licenças entram em estado crítico hoje."
+- **E-mail Diário** — "Aviso de estado de licenças diário.
 - **Lembrete de Expiração** — Para você não esquecer de limpar o que já passou.
 
 ---
@@ -69,7 +67,7 @@ Para baixar a versão estável:
 
 Ou se preferir pode clonar o repositório e rodar localmente.
 
-Se você já tem o Python instalado, está a 3 comandos de distância:
+Se você já tem o Python instalado, está a 2 comandos de distância:
 
 ```bash
 # 1. Prepare o terreno
@@ -103,7 +101,7 @@ O Key O'Clock utiliza **Fernet (AES-128 + HMAC-SHA256)** para proteger campos se
 
 ---
 
-## Personalize até o Cansaço
+## Personalização
 
 Cada usuário tem seu gosto. Por isso, oferecemos:
 
