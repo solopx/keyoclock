@@ -31,9 +31,9 @@ O sistema trabalha por você, classificando suas licenças em tempo real:
 
 | | |
 |---|---|
-| 🔴 **Expirada** | Aqui você tem um problema. |
-| 🟠 **Crítica** (≤30 dias) | Hora de abrir o processo de compra. |
-| 🟡 **Atenção / Em breve** | No seu radar, sem pressa. |
+| 🟣**Expirada** | Aqui você tem um problema. |
+| 🔴 **Crítica** (≤30 dias) | Hora de abrir o processo de compra. |
+| 🟠 **Atenção / Em breve** | No seu radar, sem pressa. |
 | 🟢 **Válida / Perpétua** | Durma tranquilo. |
 
 ### Dashboard Executivo & Widgets Estilosos

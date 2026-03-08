@@ -1,6 +1,6 @@
 # Key O'Clock
 
-> **Because an expired license doesn't warn you — it just stops your business cold.**
+> **Because expired licenses don't warn you — they just stop your business cold.**
 
 Key O'Clock is your command center for software asset and license management. No more lost Excel spreadsheets, sticky notes on the monitor, or that gut-drop feeling when a critical application stops working because someone forgot to renew the contract.
 
@@ -14,7 +14,7 @@ Key O'Clock is your command center for software asset and license management. No
 |---|---|
 | **Full Visibility** | Know exactly what you have, where it is, and what it costs. |
 | **Zero Surprises** | Visual and email alerts that warn you well before deadlines hit. |
-| **Real Reports** | Export board-ready data in seconds. |
+| **Executive Reporting** | Export board-ready data in seconds. |
 | **Privacy Taken Seriously** | Bank-grade encryption for your sensitive data. |
 
 ---
@@ -29,9 +29,9 @@ The system works for you, classifying your licenses in real time:
 
 | | |
 |---|---|
-| 🔴 **Expired** | You have a problem right now. |
-| 🟠 **Critical** (≤30 days) | Time to open the procurement process. |
-| 🟡 **Attention / Soon** | On your radar, no rush yet. |
+| 🟣 **Expired** | You have a problem right now. |
+| 🔴**Critical** (≤30 days) | Time to open the procurement process. |
+| 🟠 **Attention / Soon** | On your radar, no rush yet. |
 | 🟢 **Valid / Perpetual** | Sleep easy. |
 
 ### Executive Dashboard & Stylish Widgets
@@ -41,7 +41,7 @@ Pick your style: From the classic **Odometer** to the retro **Digital** (Casio-s
 
 ![widgets](docs/img/personalizacao-widget.gif)
 
-### The "Secretary" That Never Sleeps
+### The "Virtual Assistant" That Never Sleeps
 Key O'Clock sends automated reports and alerts straight to your inbox:
 
 - **Periodic Report** — A full PDF in your email every X days.
