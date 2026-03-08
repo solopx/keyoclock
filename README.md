@@ -1,4 +1,4 @@
-[![Latest Release](https://img.shields.io/github/v/release/solopx/keyoclock?style=for-the-badge&color=green)](https://github.com/solopx/keyoclock/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/solopx/keyoclock?style=for-the-badge&color=green)](https://github.com/solopx/keyoclock/releases/latest)  [![Wiki](https://img.shields.io/badge/Documentation-Wiki-blue?style=for-the-badge&logo=wikipedia&logoColor=white)](https://github.com/solopx/keyoclock/wiki)
 
 # Key O'Clock
 
