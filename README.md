@@ -46,7 +46,7 @@ Não é só funcional — é bonito. Acompanhe a saúde de seus contratos com gr
 
 Escolha seu estilo: Do clássico **Odômetro** ao nostálgico **Digital**, ou até uma **Ampulheta** para os mais requintados. São 9 estilos no total.
 
-![widgets](docs\img\personalizacao-widget.gif)
+![widgets](docs/img/personalizacao-widget.gif)
 
 ### O "Assistente Virtual" que Não Dorme
 O Key O'Clock envia relatórios e alertas automáticos diretamente para o seu e-mail:
