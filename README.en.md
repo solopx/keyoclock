@@ -44,9 +44,9 @@ Pick your style: From the classic **Odometer** to the retro **Digital** (Casio-s
 ### The "Virtual Assistant" That Never Sleeps
 Key O'Clock sends automated reports and alerts straight to your inbox:
 
-- **Periodic Report** — A full PDF in your email every X days.
-- **Daily Patrol** — "Hey, these 3 licenses go critical today."
-- **Expired Reminder** — So you don't forget to clean up what's already past.
+- **Scheduled Reports** — A full PDF in your email every X days.
+- **Daily Pulse** — "Hey, these 3 licenses go critical today."
+- **Expiration Reminders** — So you don't forget to clean up what's already past.
 
 ---
 
