@@ -38,8 +38,9 @@ O sistema trabalha por você, classificando suas licenças:
 |---|---|
 | 🟣 **Expirada** | Aqui você tem um problema! |
 | 🔴 **Crítica** (≤30 dias) | Hora de abrir o processo de compra. |
-| 🟠 **Atenção / Em breve** (≤60 dias)| No seu radar, sem pressa. |
-| 🟢 **Válida / Perpétua** (>90 dias)| Durma tranquilo. |
+| 🟠 **Aviso** (≤60 dias)| O prazo está chegando. |
+| 🟡 **Atenção** (≤90d) | No seu radar, sem pressa. |
+| 🟢 **Válida** (>90 dias)| Durma tranquilo. |
 
 ### Dashboard Executivo & Widgets Estilosos
 
